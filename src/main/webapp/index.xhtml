@@ -52,6 +52,8 @@
 
         .matrix-input {
             margin-top: 20px;
+            display: grid;
+            text-align-last: center;
         }
 
         .text-input {
@@ -81,6 +83,23 @@
             margin-top: 10px;
             color: #333;
         }
+        .risk-matrix {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .risk-matrix td {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .risk-element {
+            background-color: #f0f0f0; /* or any color you prefer for risk elements */
+        }
 
     </style>
 </h:head>
@@ -96,6 +115,13 @@
             <h:commandButton value="Задать" action="#{natureGameSolverBean.initMatrix}" styleClass="command-button"/>
 
             <ui:fragment id="matrixSection" rendered="#{natureGameSolverBean.matrixInitialized}">
+                <h:outputLabel for="probabilities" style="margin-bottom: 10px">Вероятности состояний природы(в сумме равны 1):</h:outputLabel>
+                <div id="probabilities">
+                    <ui:repeat value="#{natureGameSolverBean.probabilitiesArray}" var="stateOfNature" varStatus="col">
+                        <h:inputText value="#{natureGameSolverBean.probabilitiesArray[col.index]}" styleClass="text-input" style="place-self: center"/>
+                    </ui:repeat>
+
+                </div>
                 <div class="matrix-input">
                     <ui:repeat var="row" value="#{natureGameSolverBean.matrix}" varStatus="rowLoop">
                         <div class="row">
@@ -104,12 +130,14 @@
                             </ui:repeat>
                         </div>
                     </ui:repeat>
+                    <h:outputLabel for="gurvicCoeff" style="margin-bottom: 10px">Коэффициент Гурвица(от 0 до 1):</h:outputLabel>
+                    <h:inputText id="gurvicCoeff" value="#{natureGameSolverBean.coeffGurvic}" styleClass="text-input" style="place-self: center"/>
                 </div>
             </ui:fragment>
 
 
 
-            <h:commandButton value="Заполнить матрицу и посчитать максимакс" action="#{natureGameSolverBean.analyzeMatrix}" rendered="#{natureGameSolverBean.matrixInitialized}" styleClass="command-button" update="matrixSection resultSection"/>
+            <h:commandButton value="Заполнить матрицу и посчитать критерии" action="#{natureGameSolverBean.analyzeMatrix}" rendered="#{natureGameSolverBean.matrixInitialized}" styleClass="command-button" update="matrixSection resultSection"/>
 
 
 
@@ -119,9 +147,27 @@
             <ui:fragment id="resultSection" rendered="#{natureGameSolverBean.resultAvailable}">
                 <h:outputText value="Критерий максимакса. Результат:
                 стратегия #{1+natureGameSolverBean.rowForMaximax}
-                 со значением #{natureGameSolverBean.valueForMaximax}" />
+                 со значением #{natureGameSolverBean.valueForMaximax}"/>
                 <br/>
-                <h:outputText value="Критерий Вальда. Результат: стратегия #{1+natureGameSolverBean.rowForMaximin} со значаением #{natureGameSolverBean.valueForMaximin}"/>
+                <h:outputText value="Критерий Вальда. Результат: стратегия #{1+natureGameSolverBean.rowForMaximin} со значением #{natureGameSolverBean.valueForMaximin}"/>
+                <br/>
+                <h:outputText value="Критерий Гурвица. Результат: стратегия #{1+natureGameSolverBean.rowForGurvic} со значением #{natureGameSolverBean.valueForGurvic}"/>
+                <br/>
+                <h:outputText value="Критерий Лапласа. Результат: стратегия #{1+natureGameSolverBean.rowForLaplace} со значением #{natureGameSolverBean.valueForLaplace}"/>
+                <br/>
+                <h:outputText value="Критерий Байеса. Результат: стратегия #{1+natureGameSolverBean.rowForBayes} со значением #{natureGameSolverBean.valueForBayes}"/>
+                <h3>Матрица Рисков</h3>
+                <table class="risk-matrix">
+                    <ui:repeat var="row" value="#{natureGameSolverBean.riskMatrix}" varStatus="rowLoop">
+                        <tr>
+                            <ui:repeat var="element" value="#{row}" varStatus="colLoop">
+                                <td class="risk-element">#{element}</td>
+                            </ui:repeat>
+                        </tr>
+                    </ui:repeat>
+                </table>
+                <h:outputText value="Критерий Сэвиджа. Результат: стратегия #{1+natureGameSolverBean.rowForSavage} со значением #{natureGameSolverBean.valueForSavage}"/>
+                <br/>
             </ui:fragment>
         </div>
     </h:form>
